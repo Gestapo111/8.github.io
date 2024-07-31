@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Evaluación: CLASIFICANDO A LOS SERES VIVOS</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        h1 {
+            color: #333;
+        }
+        .quiz-container {
+            background-color: #fff;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            width: 80%;
+            max-width: 800px;
+        }
+        .question {
+            margin-bottom: 15px;
+        }
+        .options {
+            list-style-type: none;
+            padding: 0;
+        }
+        .options li {
+            margin-bottom: 10px;
+        }
+        button {
+            background-color: #28a745;
+            color: #fff;
+            border: none;
+            padding: 10px 20px;
+            cursor: pointer;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+        button:hover {
+            background-color: #218838;
+        }
+        #results {
+            margin-top: 20px;
+            font-size: 18px;
+        }
+        footer {
+            background-color: #333;
+            color: #fff;
+            padding: 10px;
+            width: 100%;
+            text-align: center;
+            position: fixed;
+            bottom: 0;
+        }
+    </style>
+</head>
+<body>
+    <h1>Evaluación: CLASIFICANDO A LOS SERES VIVOS</h1>
+    <div class="quiz-container">
+        <div id="quiz"></div>
+        <button id="submit">Enviar respuestas</button>
+        <div id="results"></div>
+    </div>
+    <footer>
+        &copy; derechos reservados Prof. Alberto Sanchez
+    </footer>
+    <script>
+        const quizData = [
+            {
+                question: "¿Qué es la taxonomía?",
+                answers: [
+                    { text: "La ciencia de clasificar organismos.", correct: true },
+                    { text: "La ciencia de estudiar fósiles.", correct: false },
+                    { text: "La ciencia de estudiar el comportamiento animal.", correct: false },
+                    { text: "La ciencia de estudiar los ecosistemas.", correct: false }
+                ]
+            },
+            {
+                question: "¿Cuál es el sistema de clasificación jerárquica más amplio?",
+                answers: [
+                    { text: "Reino.", correct: true },
+                    { text: "Filo.", correct: false },
+                    { text: "Clase.", correct: false },
+                    { text: "Orden.", correct: false }
+                ]
+            },
+            {
+                question: "¿Qué características definen a los mamíferos?",
+                answers: [
+                    { text: "Presencia de glándulas mamarias y pelo.", correct: true },
+                    { text: "Presencia de escamas y puesta de huevos.", correct: false },
+                    { text: "Capacidad de volar y plumas.", correct: false },
+                    { text: "Piel húmeda y respiración cutánea.", correct: false }
+                ]
+            },
+            {
+                question: "¿Qué es un filo en biología?",
+                answers: [
+                    { text: "Una categoría de clasificación que agrupa a los organismos con características estructurales similares.", correct: true },
+                    { text: "Una categoría de clasificación que agrupa a los organismos según su hábitat.", correct: false },
+                    { text: "Una categoría de clasificación que agrupa a los organismos según su comportamiento.", correct: false },
+                    { text: "Una categoría de clasificación que agrupa a los organismos según su tamaño.", correct: false }
+                ]
+            },
+            {
+                question: "¿Qué es una especie?",
+                answers: [
+                    { text: "Un grupo de organismos que pueden reproducirse entre sí y producir descendencia fértil.", correct: true },
+                    { text: "Un grupo de organismos que viven en el mismo hábitat.", correct: false },
+                    { text: "Un grupo de organismos que tienen el mismo tamaño.", correct: false },
+                    { text: "Un grupo de organismos que tienen el mismo comportamiento.", correct: false }
+                ]
+            },
+            {
+                question: "¿Qué es un género?",
+                answers: [
+                    { text: "Una categoría de clasificación que agrupa a especies similares.", correct: true },
+                    { text: "Una categoría de clasificación que agrupa a organismos con características estructurales similares.", correct: false },
+                    { text: "Una categoría de clasificación que agrupa a organismos según su hábitat.", correct: false },
+                    { text: "Una categoría de clasificación que agrupa a organismos según su comportamiento.", correct: false }
+                ]
+            },
+            {
+                question: "¿Qué es una familia en biología?",
+                answers: [
+                    { text: "Una categoría de clasificación que agrupa a géneros relacionados.", correct: true },
+                    { text: "Una categoría de clasificación que agrupa a especies similares.", correct: false },
+                    { text: "Una categoría de clasificación que agrupa a organismos con características estructurales similares.", correct: false },
+                    { text: "Una categoría de clasificación que agrupa a organismos según su hábitat.", correct: false }
+                ]
+            },
+            {
+                question: "¿Qué es una clase en biología?",
+                answers: [
+                    { text: "Una categoría de clasificación que agrupa a órdenes relacionados.", correct: true },
+                    { text: "Una categoría de clasificación que agrupa a géneros relacionados.", correct: false },
+                    { text: "Una categoría de clasificación que agrupa a especies similares.", correct: false },
+                    { text: "Una categoría de clasificación que agrupa a organismos según su hábitat.", correct: false }
+                ]
+            },
+            {
+                question: "¿Qué es un orden en biología?",
+                answers: [
+                    { text: "Una categoría de clasificación que agrupa a familias relacionadas.", correct: true },
+                    { text: "Una categoría de clasificación que agrupa a géneros relacionados.", correct: false },
+                    { text: "Una categoría de clasificación que agrupa a especies similares.", correct: false },
+                    { text: "Una categoría de clasificación que agrupa a organismos según su hábitat.", correct: false }
+                ]
+            },
+            {
+                question: "¿Qué es una subespecie?",
+                answers: [
+                    { text: "Un grupo de organismos dentro de una especie que tienen diferencias menores pero aún pueden reproducirse entre sí.", correct: true },
+                    { text: "Un grupo de organismos dentro de un género que tienen diferencias menores.", correct: false },
+                    { text: "Un grupo de organismos dentro de una familia que tienen diferencias menores.", correct: false },
+                    { text: "Un grupo de organismos dentro de un orden que tienen diferencias menores.", correct: false }
+                ]
+            },
+            {
+                question: "¿Qué es la nomenclatura binomial?",
+                answers: [
+                    { text: "Un sistema de nombres científicos que utiliza dos palabras para identificar a un organismo: el género y la especie.", correct: true },
+                    { text: "Un sistema de nombres científicos que utiliza una palabra para identificar a un organismo.", correct: false },
+                    { text: "Un sistema de nombres científicos que utiliza tres palabras para identificar a un organismo.", correct: false },
+                    { text: "Un sistema de nombres científicos que utiliza cuatro palabras para identificar a un organismo.", correct: false }
+                ]
+            },
+            {
+                question: "¿Qué es un protista?",
+                answers: [
+                    { text: "Un organismo eucariota que no es un animal, planta ni hongo.", correct: true },
+                    { text: "Un organismo procariota que no es una bacteria ni un arquea.", correct: false },
+                    { text: "Un organismo eucariota que es un animal.", correct: false },
+                    { text: "Un organismo procariota que es una bacteria.", correct: false }
+                ]
+            },
+            {
+                question: "¿Qué es un hongo?",
+                answers: [
+                    { text: "Un organismo eucariota que absorbe nutrientes del medio ambiente.", correct: true },
+                    { text: "Un organismo procariota que absorbe nutrientes del medio ambiente.", correct: false },
+                    { text: "Un organismo eucariota que produce su propio alimento mediante la fotosíntesis.", correct: false },
+                    { text: "Un organismo procariota que produce su propio alimento mediante la fotosíntesis.", correct: false }
+                ]
+            },
+            {
+                question: "¿Qué es una planta?",
+                answers: [
+                    { text: "Un organismo eucariota que produce su propio alimento mediante la fotosíntesis.", correct: true },
+                    { text: "Un organismo procariota que produce su propio alimento mediante la fotosíntesis.", correct: false },
+                    { text: "Un organismo eucariota que absorbe nutrientes del medio ambiente.", correct: false },
+                    { text: "Un organismo procariota que absorbe nutrientes del medio ambiente.", correct: false }
+                ]
+            },
+            {
+                question: "¿Qué es un animal?",
+                answers: [
+                    { text: "Un organismo eucariota que obtiene su alimento mediante la ingestión de otros organismos.", correct: true },
+                    { text: "Un organismo procariota que obtiene su alimento mediante la ingestión de otros organismos.", correct: false },
+                    { text: "Un organismo eucariota que produce su propio alimento mediante la fotosíntesis.", correct: false },
+                    { text: "Un organismo procariota que produce su propio alimento mediante la fotosíntesis.", correct: false }
+                ]
+            },
+            {
+                question: "¿Qué es un bacteriófago?",
+                answers: [
+                    { text: "Un virus que infecta bacterias.", correct: true },
+                    { text: "Una bacteria que infecta virus.", correct: false },
+                    { text: "Un hongo que infecta bacterias.", correct: false },
+                    { text: "Una bacteria que infecta hongos.", correct: false }
+                ]
+            },
+            {
+                question: "¿Qué es un virus?",
+                answers: [
+                    { text: "Una partícula infecciosa que consiste en un núcleo de ácido nucleico rodeado por una cubierta de proteína.", correct: true },
+                    { text: "Una célula procariota que causa enfermedades.", correct: false },
+                    { text: "Una célula eucariota que causa enfermedades.", correct: false },
+                    { text: "Un organismo unicelular que causa enfermedades.", correct: false }
+                ]
+            },
+            {
+                question: "¿Qué es un arquea?",
+                answers: [
+                    { text: "Un organismo procariota que vive en ambientes extremos.", correct: true },
+                    { text: "Un organismo eucariota que vive en ambientes extremos.", correct: false },
+                    { text: "Un organismo procariota que vive en ambientes normales.", correct: false },
+                    { text: "Un organismo eucariota que vive en ambientes normales.", correct: false }
+                ]
+            },
+            {
+                question: "¿Qué es un cianobacteria?",
+                answers: [
+                    { text: "Una bacteria que puede realizar la fotosíntesis.", correct: true },
+                    { text: "Una bacteria que no puede realizar la fotosíntesis.", correct: false },
+                    { text: "Un hongo que puede realizar la fotosíntesis.", correct: false },
+                    { text: "Un hongo que no puede realizar la fotosíntesis.", correct: false }
+                ]
+            },
+            {
+                question: "¿Qué es una alga?",
+                answers: [
+                    { text: "Un organismo eucariota que realiza la fotosíntesis y vive en ambientes acuáticos.", correct: true },
+                    { text: "Un organismo procariota que realiza la fotosíntesis y vive en ambientes acuáticos.", correct: false },
+                    { text: "Un organismo eucariota que absorbe nutrientes del medio ambiente y vive en ambientes acuáticos.", correct: false },
+                    { text: "Un organismo procariota que absorbe nutrientes del medio ambiente y vive en ambientes acuáticos.", correct: false }
+                ]
+            },
+            {
+                question: "¿Qué es una protozoo?",
+                answers: [
+                    { text: "Un organismo eucariota unicelular que obtiene su alimento mediante la ingestión de otros organismos.", correct: true },
+                    { text: "Un organismo procariota unicelular que obtiene su alimento mediante la ingestión de otros organismos.", correct: false },
+                    { text: "Un organismo eucariota multicelular que obtiene su alimento mediante la ingestión de otros organismos.", correct: false },
+                    { text: "Un organismo procariota multicelular que obtiene su alimento mediante la ingestión de otros organismos.", correct: false }
+                ]
+            },
+            {
+                question: "¿Qué es una esporofito?",
+                answers: [
+                    { text: "La fase diploide de una planta que produce esporas.", correct: true },
+                    { text: "La fase haploide de una planta que produce esporas.", correct: false },
+                    { text: "La fase diploide de una planta que produce gametos.", correct: false },
+                    { text: "La fase haploide de una planta que produce gametos.", correct: false }
+                ]
+            },
+            {
+                question: "¿Qué es una gametofito?",
+                answers: [
+                    { text: "La fase haploide de una planta que produce gametos.", correct: true },
+                    { text: "La fase diploide de una planta que produce gametos.", correct: false },
+                    { text: "La fase haploide de una planta que produce esporas.", correct: false },
+                    { text: "La fase diploide de una planta que produce esporas.", correct: false }
+                ]
+            },
+            {
+                question: "¿Qué es un micorriza?",
+                answers: [
+                    { text: "Una relación simbiótica entre un hongo y una planta.", correct: true },
+                    { text: "Una relación simbiótica entre un hongo y una bacteria.", correct: false },
+                    { text: "Una relación simbiótica entre una bacteria y una planta.", correct: false },
+                    { text: "Una relación simbiótica entre un hongo y un alga.", correct: false }
+                ]
+            },
+            {
+                question: "¿Qué es un líquen?",
+                answers: [
+                    { text: "Una relación simbiótica entre un hongo y un alga.", correct: true },
+                    { text: "Una relación simbiótica entre un hongo y una planta.", correct: false },
+                    { text: "Una relación simbiótica entre un hongo y una bacteria.", correct: false },
+                    { text: "Una relación simbiótica entre una bacteria y una planta.", correct: false }
+                ]
+            }
+        ];
+
+        let attempt = 0;
+        const maxAttempts = 3;
+
+        function shuffle(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+            return array;
+        }
+
+        function loadQuiz() {
+            const quizContainer = document.getElementById('quiz');
+            quizContainer.innerHTML = '';
+            quizData.forEach((data, index) => {
+                const questionContainer = document.createElement('div');
+                questionContainer.className = 'question';
+
+                const questionTitle = document.createElement('h3');
+                questionTitle.innerText = `${index + 1}. ${data.question}`;
+                questionContainer.appendChild(questionTitle);
+
+                const optionsList = document.createElement('ul');
+                optionsList.className = 'options';
+
+                shuffle(data.answers).forEach(answer => {
+                    const option = document.createElement('li');
+                    const optionLabel = document.createElement('label');
+                    const optionInput = document.createElement('input');
+                    optionInput.type = 'radio';
+                    optionInput.name = `question${index}`;
+                    optionInput.value = answer.correct;
+                    optionLabel.appendChild(optionInput);
+                    optionLabel.appendChild(document.createTextNode(answer.text));
+                    option.appendChild(optionLabel);
+                    optionsList.appendChild(option);
+                });
+
+                questionContainer.appendChild(optionsList);
+                quizContainer.appendChild(questionContainer);
+            });
+        }
+
+        function submitQuiz() {
+            if (attempt >= maxAttempts) {
+                alert('Has alcanzado el número máximo de intentos.');
+                return;
+            }
+
+            const resultsContainer = document.getElementById('results');
+            const answers = document.querySelectorAll('input[type="radio"]:checked');
+            let score = 0;
+
+            quizData.forEach((data, index) => {
+                const selected = answers[index] ? answers[index].value === 'true' : null;
+                if (selected === true) {
+                    score += 0.4; // Each correct answer is worth 0.4 points
+                }
+            });
+
+            score = Math.round(score * 10) / 10; // Round to one decimal place
+            let feedback = quizData.map((data, index) => {
+                const selected = answers[index] ? answers[index].value === 'true' : null;
+                let result;
+                if (selected === null) {
+                    result = "No contestada";
+                } else if (selected === true) {
+                    result = "Correcta";
+                } else {
+                    result = "Incorrecta";
+                }
+                return `<p>${index + 1}. ${result}</p>`;
+            }).join("");
+
+            resultsContainer.innerHTML = `<h3>Resultados:</h3><p>Puntaje: ${score} / 10</p>${feedback}`;
+
+            attempt++;
+            if (attempt >= maxAttempts) {
+                alert('Has alcanzado el número máximo de intentos.');
+            }
+        }
+
+        document.getElementById('submit').addEventListener('click', submitQuiz);
+
+        loadQuiz();
+    </script>
+</body>
+</html>

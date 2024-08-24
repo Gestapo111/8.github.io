@@ -7,554 +7,559 @@
     <style>
         body {
             font-family: Arial, sans-serif;
-            padding: 20px;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            user-select: none;
         }
+        h1 {
+            color: #333;
+        }
+        .quiz-container {
+            background-color: #fff;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            width: 80%;
+            max-width: 800px;
+            display: none;
+        }
+        .indicator {
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+        .question {
+            margin-bottom: 15px;
+        }
+        .options {
+            list-style-type: none;
+            padding: 0;
+        }
+        .options li {
+            margin-bottom: 10px;
+        }
+        button {
+            background-color: #28a745;
+            color: #fff;
+            border: none;
+            padding: 10px 20px;
+            cursor: pointer;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+        button:hover {
+            background-color: #218838;
+        }
+        #results {
+            margin-top: 20px;
+            font-size: 18px;
+        }
+        footer {
+            background-color: #333;
+            color: #fff;
+            padding: 10px;
+            width: 100%;
+            text-align: center;
+            position: fixed;
+            bottom: 0;
+        }
+        .input-field {
+            margin-bottom: 10px;
+        }
+        .input-field label {
+            display: block;
+            margin-bottom: 5px;
+        }
+        .input-field input {
+            width: 100%;
+            padding: 8px;
+            box-sizing: border-box;
+        }
+        /* Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0, 0, 0, 0.4);
+            padding-top: 60px;
+        }
+        .modal-content {
+            background-color: #fefefe;
+            margin: 5% auto;
+            padding: 20px;
+            border: 1px solid #888;
+            width: 80%;
+            max-width: 600px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+        }
+        .close {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+        }
+        .close:hover,
+        .close:focus {
+            color: black;
+            text-decoration: none;
+            cursor: pointer;
+        }
+        /* Cronómetro flotante */
         #timer {
             position: fixed;
             top: 10px;
             right: 10px;
-            background-color: #f2f2f2;
-            border: 1px solid #ccc;
             padding: 10px;
+            background-color: green;
+            color: white;
             font-size: 18px;
             border-radius: 5px;
         }
-        .hidden {
-            display: none;
+        /* Estilo para los números de preguntas incorrectas */
+        .incorrect-answers {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
         }
-        .question {
-            margin-bottom: 20px;
-        }
-        .question h3 {
-            margin-bottom: 10px;
-        }
-        .container {
-            max-width: 800px;
-            margin: 0 auto;
-        }
-        #resultsModal {
-            display: none;
-            position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            background-color: white;
-            padding: 20px;
-            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.5);
-            z-index: 1000;
-        }
-        #overlay {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0, 0, 0, 0.5);
-            z-index: 500;
+        .incorrect-answers div {
+            width: 18%;
+            text-align: center;
+            background-color: #f8d7da;
+            border: 1px solid #f5c6cb;
+            padding: 5px;
+            border-radius: 5px;
         }
     </style>
 </head>
 <body>
-    <div id="timer" class="hidden">Tiempo restante: <span id="time">30:00</span></div>
+    <h1>Evaluación Unidad 8: Clasificando a los Seres Vivos</h1>
+    <div class="quiz-container">
+        <div id="quiz"></div>
+        <button id="submit">Enviar respuestas</button>
+    </div>
+    <footer>
+        &copy; Derechos Reservados Prof. Alberto Sanchez
+    </footer>
 
-    <div class="container">
-        <div id="studentInfoForm">
-            <h2>Información del Estudiante</h2>
-            <form id="infoForm">
-                <label for="name">Nombre del Estudiante:</label>
-                <input type="text" id="name" required><br><br>
+    <!-- Modal para solicitar nombre y NIE -->
+    <div id="infoModal" class="modal">
+        <div class="modal-content">
+            <h2>Por favor, ingresa tus datos</h2>
+            <div class="input-field">
+                <label for="fullname">Nombre completo:</label>
+                <input type="text" id="fullname" required>
+            </div>
+            <div class="input-field">
                 <label for="nie">NIE:</label>
-                <input type="text" id="nie" required><br><br>
-                <label for="unit">Unidad Evaluada:</label>
-                <input type="text" id="unit" value="Unidad 8: Clasificando a los Seres Vivos" readonly><br><br>
-                <button type="submit">Iniciar Evaluación</button>
-            </form>
+                <input type="text" id="nie" required>
+            </div>
+            <button id="startQuiz">Comenzar Evaluación</button>
         </div>
-
-        <div id="quiz" class="hidden">
-            <h2>Evaluación Unidad 8: Clasificando a los Seres Vivos</h2>
-
-            <div id="questions-container"></div>
-
-            <button id="submitQuiz">OBTENER CALIFICACIÓN</button>
-        </div>
-
-        <div id="resultsModal">
-            <h2>Resultados</h2>
-            <p id="date"></p>
-            <p id="timeTaken"></p>
-            <p id="unitEvaluated"></p>
-            <p id="studentName"></p>
-            <p id="studentNIE"></p>
-            <p id="score"></p>
-            <p id="incorrectAnswers"></p>
-            <button id="closeModal">Cerrar</button>
-        </div>
-
-        <div id="overlay"></div>
     </div>
 
-    <script>
-        const nieList = ["4267837", "3850952", "3851018", "5032035", "19806181", "6297536", "2608724", "6262810", "4267838", "20162435", "3850923", "19806209", "4267828", "3850942"];
-        const maxTime = 30 * 60; // 30 minutos en segundos
-        let timeRemaining = maxTime;
-        const timerElement = document.getElementById('time');
-        let startTime;
+    <!-- Modal de resultados -->
+    <div id="resultModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2>Resultados de la Evaluación</h2>
+            <p id="modalName"></p>
+            <p id="modalNIE"></p>
+            <h3>Preguntas incorrectas:</h3>
+            <div id="modalIncorrectAnswers" class="incorrect-answers"></div>
+            <h3>Detalles:</h3>
+            <p id="modalDetails"></p>
+            <h3>Intentos de manipulación detectados:</h3>
+            <p id="manipulationCount"></p>
+            <h3>Reintentos:</h3>
+            <p id="attemptCount"></p>
+        </div>
+    </div>
 
-        const questions = [
-            // Indicador 8.1
+    <div id="timer">30:00</div>
+
+    <script>
+        const quizData = [
             {
-                id: 'q1',
-                indicator: 'Indicador 8.1: Indaga y describe con certeza la importancia de la diversidad biológica, según los diferentes niveles: genético, especies, ecosistema y paisajes.',
-                question: "¿Qué nivel de diversidad biológica se refiere a la variación genética dentro de una especie?",
-                options: [
-                    { value: 'a', text: "Diversidad genética." },
-                    { value: 'b', text: "Diversidad de especies." },
-                    { value: 'c', text: "Diversidad de ecosistemas." },
-                    { value: 'd', text: "Diversidad de paisajes." }
+                indicator: "Indicador 8.1: Indaga y describe con certeza la importancia de la diversidad biológica, según los diferentes niveles: genético, especies, ecosistema y paisajes.",
+                questions: [
+                    {
+                        question: "¿Qué nivel de diversidad biológica se refiere a la variación genética dentro de una especie?",
+                        answers: [
+                            { text: "Diversidad genética.", correct: true },
+                            { text: "Diversidad de especies.", correct: false },
+                            { text: "Diversidad de ecosistemas.", correct: false },
+                            { text: "Diversidad de paisajes.", correct: false }
+                        ]
+                    },
+                    {
+                        question: "¿Por qué es importante la diversidad biológica para la estabilidad de los ecosistemas?",
+                        answers: [
+                            { text: "Proporciona resiliencia frente a cambios ambientales.", correct: true },
+                            { text: "Reduce la competencia entre especies.", correct: false },
+                            { text: "Aumenta la productividad agrícola.", correct: false },
+                            { text: "Disminuye la necesidad de especies depredadoras.", correct: false }
+                        ]
+                    },
+                    {
+                        question: "¿Qué nivel de diversidad biológica es esencial para mantener los servicios ecosistémicos?",
+                        answers: [
+                            { text: "Diversidad de ecosistemas.", correct: true },
+                            { text: "Diversidad genética.", correct: false },
+                            { text: "Diversidad de especies.", correct: false },
+                            { text: "Diversidad de paisajes.", correct: false }
+                        ]
+                    },
+                    {
+                        question: "¿Qué nivel de diversidad biológica se relaciona con la variación en el paisaje, incluyendo diferentes tipos de hábitats?",
+                        answers: [
+                            { text: "Diversidad de paisajes.", correct: true },
+                            { text: "Diversidad de especies.", correct: false },
+                            { text: "Diversidad genética.", correct: false },
+                            { text: "Diversidad de ecosistemas.", correct: false }
+                        ]
+                    },
+                    {
+                        question: "¿Qué nivel de diversidad es crucial para la agricultura sostenible?",
+                        answers: [
+                            { text: "Diversidad genética.", correct: true },
+                            { text: "Diversidad de especies.", correct: false },
+                            { text: "Diversidad de ecosistemas.", correct: false },
+                            { text: "Diversidad de paisajes.", correct: false }
+                        ]
+                    },
+                    {
+                        question: "¿Cuál de los siguientes es un beneficio directo de la diversidad biológica para la salud humana?",
+                        answers: [
+                            { text: "Provisión de medicamentos derivados de plantas y otros organismos.", correct: true },
+                            { text: "Reducción de la necesidad de conservación de especies.", correct: false },
+                            { text: "Disminución de la variabilidad genética.", correct: false },
+                            { text: "Aumento de la cantidad de especies invasoras.", correct: false }
+                        ]
+                    },
+                    {
+                        question: "¿Cómo afecta la pérdida de la diversidad biológica a los ecosistemas?",
+                        answers: [
+                            { text: "Reduce la capacidad del ecosistema para recuperarse de perturbaciones.", correct: true },
+                            { text: "Mejora la capacidad del ecosistema para mantener la biodiversidad.", correct: false },
+                            { text: "Aumenta la estabilidad y resiliencia del ecosistema.", correct: false },
+                            { text: "No tiene efecto en la estabilidad del ecosistema.", correct: false }
+                        ]
+                    },
+                    {
+                        question: "¿Cómo contribuye la diversidad genética a la adaptación de las especies?",
+                        answers: [
+                            { text: "Aumenta las probabilidades de supervivencia en condiciones cambiantes.", correct: true },
+                            { text: "Disminuye la capacidad de respuesta al cambio climático.", correct: false },
+                            { text: "Reduce la variabilidad dentro de la población.", correct: false },
+                            { text: "Fomenta la especialización en nichos específicos.", correct: false }
+                        ]
+                    },
+                    {
+                        question: "¿Cómo contribuye la diversidad de especies a la resiliencia de un ecosistema?",
+                        answers: [
+                            { text: "Proporciona redundancia funcional, lo que permite que el ecosistema mantenga su función incluso si una especie se pierde.", correct: true },
+                            { text: "Disminuye la capacidad del ecosistema para adaptarse a cambios.", correct: false },
+                            { text: "Reduce la capacidad del ecosistema para recuperarse de perturbaciones.", correct: false },
+                            { text: "No tiene ningún impacto en la resiliencia del ecosistema.", correct: false }
+                        ]
+                    },
+                    {
+                        question: "¿Qué nivel de diversidad es crucial para la agricultura sostenible?",
+                        answers: [
+                            { text: "Diversidad genética.", correct: true },
+                            { text: "Diversidad de especies.", correct: false },
+                            { text: "Diversidad de ecosistemas.", correct: false },
+                            { text: "Diversidad de paisajes.", correct: false }
+                        ]
+                    }
                 ]
             },
             {
-                id: 'q2',
-                indicator: 'Indicador 8.1: Indaga y describe con certeza la importancia de la diversidad biológica, según los diferentes niveles: genético, especies, ecosistema y paisajes.',
-                question: "¿Por qué es importante la diversidad biológica para la estabilidad de los ecosistemas?",
-                options: [
-                    { value: 'a', text: "Proporciona resiliencia frente a cambios ambientales." },
-                    { value: 'b', text: "Reduce la competencia entre especies." },
-                    { value: 'c', text: "Aumenta la productividad agrícola." },
-                    { value: 'd', text: "Disminuye la necesidad de especies depredadoras." }
+                indicator: "Indicador 8.2: Representa, cataloga y describe con responsabilidad algunas especies, ecosistemas y paisajes de El Salvador: amenazados, extinguidos, en peligro, vulnerables y otros.",
+                questions: [
+                    {
+                        question: "¿Qué ecosistema de El Salvador está gravemente amenazado por la urbanización?",
+                        answers: [
+                            { text: "Las zonas costeras.", correct: true },
+                            { text: "Las áreas de páramo.", correct: false },
+                            { text: "Las sabanas tropicales.", correct: false },
+                            { text: "Los bosques de coníferas.", correct: false }
+                        ]
+                    },
+                    {
+                        question: "¿Qué factor contribuye a la vulnerabilidad de los ecosistemas en El Salvador?",
+                        answers: [
+                            { text: "La deforestación.", correct: true },
+                            { text: "El crecimiento de las áreas protegidas.", correct: false },
+                            { text: "El aumento de las poblaciones de especies nativas.", correct: false },
+                            { text: "La creación de corredores biológicos.", correct: false }
+                        ]
+                    },
+                    {
+                        question: "¿Qué término describe a una especie que ya no existe en su hábitat natural pero vive en otros lugares?",
+                        answers: [
+                            { text: "Extinta en la naturaleza.", correct: true },
+                            { text: "Extinta globalmente.", correct: false },
+                            { text: "En peligro crítico.", correct: false },
+                            { text: "Vulnerable.", correct: false }
+                        ]
+                    },
+                    {
+                        question: "¿Qué paisaje en El Salvador ha sido impactado significativamente por la agricultura intensiva?",
+                        answers: [
+                            { text: "Las llanuras costeras.", correct: true },
+                            { text: "Las tierras altas volcánicas.", correct: false },
+                            { text: "Las mesetas áridas.", correct: false },
+                            { text: "Las zonas de tundra.", correct: false }
+                        ]
+                    },
+                    {
+                        question: "¿Cuál es un ejemplo de una especie vulnerable en El Salvador?",
+                        answers: [
+                            { text: "El venado cola blanca (Odocoileus virginianus).", correct: true },
+                            { text: "El oso pardo (Ursus arctos).", correct: false },
+                            { text: "El águila real (Aquila chrysaetos).", correct: false },
+                            { text: "El canguro rojo (Macropus rufus).", correct: false }
+                        ]
+                    },
+                    {
+                        question: "¿Cuál es un ejemplo de una especie en peligro de extinción en El Salvador?",
+                        answers: [
+                            { text: "El jaguar (Panthera onca).", correct: true },
+                            { text: "La iguana verde (Iguana iguana).", correct: false },
+                            { text: "El quetzal (Pharomachrus mocinno).", correct: false },
+                            { text: "El tucán pico de canoa (Ramphastos sulfuratus).", correct: false }
+                        ]
+                    },
+                    {
+                        question: "¿Qué ecosistema en El Salvador se considera vulnerable debido a la deforestación?",
+                        answers: [
+                            { text: "El bosque seco tropical.", correct: true },
+                            { text: "El páramo andino.", correct: false },
+                            { text: "El desierto de Sonora.", correct: false },
+                            { text: "La tundra ártica.", correct: false }
+                        ]
+                    },
+                    {
+                        question: "¿Cuál de los siguientes paisajes de El Salvador está bajo amenaza debido a la actividad humana?",
+                        answers: [
+                            { text: "Los manglares.", correct: true },
+                            { text: "Las playas de arena blanca.", correct: false },
+                            { text: "Las montañas de niebla.", correct: false },
+                            { text: "Las áreas desérticas.", correct: false }
+                        ]
+                    },
+                    {
+                        question: "¿Qué término se usa para describir un ecosistema que ha sido alterado pero aún mantiene su función ecológica?",
+                        answers: [
+                            { text: "Ecosistema alterado.", correct: true },
+                            { text: "Ecosistema resiliente.", correct: false },
+                            { text: "Ecosistema degradado.", correct: false },
+                            { text: "Ecosistema colapsado.", correct: false }
+                        ]
+                    },
+                    {
+                        question: "¿Qué paisaje en El Salvador ha sido impactado significativamente por la agricultura intensiva?",
+                        answers: [
+                            { text: "Las llanuras costeras.", correct: true },
+                            { text: "Las tierras altas volcánicas.", correct: false },
+                            { text: "Las mesetas áridas.", correct: false },
+                            { text: "Las zonas de tundra.", correct: false }
+                        ]
+                    }
                 ]
             },
             {
-                id: 'q3',
-                indicator: 'Indicador 8.1: Indaga y describe con certeza la importancia de la diversidad biológica, según los diferentes niveles: genético, especies, ecosistema y paisajes.',
-                question: "¿Cuál es un ejemplo de diversidad de especies?",
-                options: [
-                    { value: 'a', text: "La variedad de especies de aves en un bosque tropical." },
-                    { value: 'b', text: "La variación genética en una población de lobos." },
-                    { value: 'c', text: "La distribución de diferentes ecosistemas en una región." },
-                    { value: 'd', text: "La variedad de tipos de suelo en un paisaje." }
+                indicator: "Indicador 8.3: Indaga y describe con interés las causas de la pérdida de la biodiversidad en el país.",
+                questions: [
+                    {
+                        question: "¿Qué impacto tiene la conversión de tierras agrícolas en la biodiversidad?",
+                        answers: [
+                            { text: "Reduce la diversidad de hábitats disponibles para las especies.", correct: true },
+                            { text: "Crea nuevos hábitats para especies nativas.", correct: false },
+                            { text: "Aumenta la diversidad de especies.", correct: false },
+                            { text: "No afecta la biodiversidad.", correct: false }
+                        ]
+                    },
+                    {
+                        question: "¿Cómo afecta el cambio climático a la biodiversidad en El Salvador?",
+                        answers: [
+                            { text: "Provoca cambios en los hábitats que pueden resultar en la pérdida de especies.", correct: true },
+                            { text: "Aumenta la diversidad genética de las especies.", correct: false },
+                            { text: "No tiene impacto en la biodiversidad.", correct: false },
+                            { text: "Promueve la expansión de especies invasoras.", correct: false }
+                        ]
+                    },
+                    {
+                        question: "¿Qué impacto tiene la agricultura intensiva en la biodiversidad?",
+                        answers: [
+                            { text: "Destruye hábitats naturales y reduce la diversidad de especies.", correct: true },
+                            { text: "Aumenta la diversidad de especies en áreas agrícolas.", correct: false },
+                            { text: "No afecta la biodiversidad.", correct: false },
+                            { text: "Promueve la recuperación de hábitats naturales.", correct: false }
+                        ]
+                    },
+                    {
+                        question: "¿Cómo afecta la caza furtiva a la biodiversidad en El Salvador?",
+                        answers: [
+                            { text: "Disminuye las poblaciones de especies amenazadas.", correct: true },
+                            { text: "No tiene ningún impacto en las poblaciones de especies.", correct: false },
+                            { text: "Aumenta la diversidad genética de las especies.", correct: false },
+                            { text: "Contribuye a la recuperación de especies.", correct: false }
+                        ]
+                    },
+                    {
+                        question: "¿Qué impacto tiene la urbanización en la biodiversidad de El Salvador?",
+                        answers: [
+                            { text: "Destruye hábitats naturales, lo que lleva a la pérdida de especies.", correct: true },
+                            { text: "Crea nuevos hábitats para especies adaptadas.", correct: false },
+                            { text: "No afecta la biodiversidad.", correct: false },
+                            { text: "Aumenta la diversidad de especies.", correct: false }
+                        ]
+                    },
+                    {
+                        question: "¿Cuál es una de las principales causas de la pérdida de biodiversidad en El Salvador?",
+                        answers: [
+                            { text: "La deforestación para la agricultura.", correct: true },
+                            { text: "El aumento de las áreas protegidas.", correct: false },
+                            { text: "La recuperación de especies nativas.", correct: false },
+                            { text: "La expansión de los corredores biológicos.", correct: false }
+                        ]
+                    },
+                    {
+                        question: "¿Cómo afecta la fragmentación del hábitat a la biodiversidad en El Salvador?",
+                        answers: [
+                            { text: "Aísla poblaciones de especies, lo que puede llevar a la extinción local.", correct: true },
+                            { text: "Aumenta la conectividad entre poblaciones de especies.", correct: false },
+                            { text: "No afecta la biodiversidad.", correct: false },
+                            { text: "Facilita la migración de especies entre hábitats.", correct: false }
+                        ]
+                    },
+                    {
+                        question: "¿Cuál es un efecto negativo de la contaminación en la biodiversidad?",
+                        answers: [
+                            { text: "Daña los hábitats naturales, afectando a las especies que dependen de ellos.", correct: true },
+                            { text: "Aumenta la disponibilidad de recursos para las especies.", correct: false },
+                            { text: "No tiene impacto en la biodiversidad.", correct: false },
+                            { text: "Promueve la diversidad de especies.", correct: false }
+                        ]
+                    }
                 ]
             },
             {
-                id: 'q4',
-                indicator: 'Indicador 8.1: Indaga y describe con certeza la importancia de la diversidad biológica, según los diferentes niveles: genético, especies, ecosistema y paisajes.',
-                question: "¿Cómo contribuye la diversidad genética a la adaptación de las especies?",
-                options: [
-                    { value: 'a', text: "Aumenta las probabilidades de supervivencia en condiciones cambiantes." },
-                    { value: 'b', text: "Disminuye la capacidad de respuesta al cambio climático." },
-                    { value: 'c', text: "Reduce la variabilidad dentro de la población." },
-                    { value: 'd', text: "Fomenta la especialización en nichos específicos." }
-                ]
-            },
-            {
-                id: 'q5',
-                indicator: 'Indicador 8.1: Indaga y describe con certeza la importancia de la diversidad biológica, según los diferentes niveles: genético, especies, ecosistema y paisajes.',
-                question: "¿Qué nivel de diversidad biológica es esencial para mantener los servicios ecosistémicos?",
-                options: [
-                    { value: 'a', text: "Diversidad de ecosistemas." },
-                    { value: 'b', text: "Diversidad genética." },
-                    { value: 'c', text: "Diversidad de especies." },
-                    { value: 'd', text: "Diversidad de paisajes." }
-                ]
-            },
-            {
-                id: 'q6',
-                indicator: 'Indicador 8.1: Indaga y describe con certeza la importancia de la diversidad biológica, según los diferentes niveles: genético, especies, ecosistema y paisajes.',
-                question: "¿Cómo afecta la pérdida de la diversidad biológica a los ecosistemas?",
-                options: [
-                    { value: 'a', text: "Reduce la capacidad del ecosistema para recuperarse de perturbaciones." },
-                    { value: 'b', text: "Mejora la capacidad del ecosistema para mantener la biodiversidad." },
-                    { value: 'c', text: "Aumenta la estabilidad y resiliencia del ecosistema." },
-                    { value: 'd', text: "No tiene efecto en la estabilidad del ecosistema." }
-                ]
-            },
-            {
-                id: 'q7',
-                indicator: 'Indicador 8.1: Indaga y describe con certeza la importancia de la diversidad biológica, según los diferentes niveles: genético, especies, ecosistema y paisajes.',
-                question: "¿Qué nivel de diversidad biológica se relaciona con la variación en el paisaje, incluyendo diferentes tipos de hábitats?",
-                options: [
-                    { value: 'a', text: "Diversidad de paisajes." },
-                    { value: 'b', text: "Diversidad de especies." },
-                    { value: 'c', text: "Diversidad genética." },
-                    { value: 'd', text: "Diversidad de ecosistemas." }
-                ]
-            },
-            {
-                id: 'q8',
-                indicator: 'Indicador 8.1: Indaga y describe con certeza la importancia de la diversidad biológica, según los diferentes niveles: genético, especies, ecosistema y paisajes.',
-                question: "¿Cómo contribuye la diversidad de especies a la resiliencia de un ecosistema?",
-                options: [
-                    { value: 'a', text: "Proporciona redundancia funcional, lo que permite que el ecosistema mantenga su función incluso si una especie se pierde." },
-                    { value: 'b', text: "Disminuye la capacidad del ecosistema para adaptarse a cambios." },
-                    { value: 'c', text: "Reduce la capacidad del ecosistema para recuperarse de perturbaciones." },
-                    { value: 'd', text: "No tiene ningún impacto en la resiliencia del ecosistema." }
-                ]
-            },
-            {
-                id: 'q9',
-                indicator: 'Indicador 8.1: Indaga y describe con certeza la importancia de la diversidad biológica, según los diferentes niveles: genético, especies, ecosistema y paisajes.',
-                question: "¿Qué nivel de diversidad es crucial para la agricultura sostenible?",
-                options: [
-                    { value: 'a', text: "Diversidad genética." },
-                    { value: 'b', text: "Diversidad de especies." },
-                    { value: 'c', text: "Diversidad de ecosistemas." },
-                    { value: 'd', text: "Diversidad de paisajes." }
-                ]
-            },
-            {
-                id: 'q10',
-                indicator: 'Indicador 8.1: Indaga y describe con certeza la importancia de la diversidad biológica, según los diferentes niveles: genético, especies, ecosistema y paisajes.',
-                question: "¿Cuál de los siguientes es un beneficio directo de la diversidad biológica para la salud humana?",
-                options: [
-                    { value: 'a', text: "Provisión de medicamentos derivados de plantas y otros organismos." },
-                    { value: 'b', text: "Reducción de la necesidad de conservación de especies." },
-                    { value: 'c', text: "Disminución de la variabilidad genética." },
-                    { value: 'd', text: "Aumento de la cantidad de especies invasoras." }
-                ]
-            },
-            // Indicador 8.2
-            {
-                id: 'q11',
-                indicator: 'Indicador 8.2: Representa, cataloga y describe con responsabilidad algunas especies, ecosistemas y paisajes de El Salvador: amenazados, extinguidos, en peligro, vulnerables y otros.',
-                question: "¿Cuál es un ejemplo de una especie en peligro de extinción en El Salvador?",
-                options: [
-                    { value: 'a', text: "El jaguar (Panthera onca)." },
-                    { value: 'b', text: "La iguana verde (Iguana iguana)." },
-                    { value: 'c', text: "El quetzal (Pharomachrus mocinno)." },
-                    { value: 'd', text: "El tucán pico de canoa (Ramphastos sulfuratus)." }
-                ]
-            },
-            {
-                id: 'q12',
-                indicator: 'Indicador 8.2: Representa, cataloga y describe con responsabilidad algunas especies, ecosistemas y paisajes de El Salvador: amenazados, extinguidos, en peligro, vulnerables y otros.',
-                question: "¿Qué ecosistema en El Salvador se considera vulnerable debido a la deforestación?",
-                options: [
-                    { value: 'a', text: "El bosque seco tropical." },
-                    { value: 'b', text: "El páramo andino." },
-                    { value: 'c', text: "El desierto de Sonora." },
-                    { value: 'd', text: "La tundra ártica." }
-                ]
-            },
-            {
-                id: 'q13',
-                indicator: 'Indicador 8.2: Representa, cataloga y describe con responsabilidad algunas especies, ecosistemas y paisajes de El Salvador: amenazados, extinguidos, en peligro, vulnerables y otros.',
-                question: "¿Qué término describe a una especie que ya no existe en su hábitat natural pero vive en otros lugares?",
-                options: [
-                    { value: 'a', text: "Extinta en la naturaleza." },
-                    { value: 'b', text: "Extinta globalmente." },
-                    { value: 'c', text: "En peligro crítico." },
-                    { value: 'd', text: "Vulnerable." }
-                ]
-            },
-            {
-                id: 'q14',
-                indicator: 'Indicador 8.2: Representa, cataloga y describe con responsabilidad algunas especies, ecosistemas y paisajes de El Salvador: amenazados, extinguidos, en peligro, vulnerables y otros.',
-                question: "¿Cuál de los siguientes paisajes de El Salvador está bajo amenaza debido a la actividad humana?",
-                options: [
-                    { value: 'a', text: "Los manglares." },
-                    { value: 'b', text: "Las playas de arena blanca." },
-                    { value: 'c', text: "Las montañas de niebla." },
-                    { value: 'd', text: "Las áreas desérticas." }
-                ]
-            },
-            {
-                id: 'q15',
-                indicator: 'Indicador 8.2: Representa, cataloga y describe con responsabilidad algunas especies, ecosistemas y paisajes de El Salvador: amenazados, extinguidos, en peligro, vulnerables y otros.',
-                question: "¿Qué factor contribuye a la vulnerabilidad de los ecosistemas en El Salvador?",
-                options: [
-                    { value: 'a', text: "La deforestación." },
-                    { value: 'b', text: "El crecimiento de las áreas protegidas." },
-                    { value: 'c', text: "El aumento de las poblaciones de especies nativas." },
-                    { value: 'd', text: "La creación de corredores biológicos." }
-                ]
-            },
-            {
-                id: 'q16',
-                indicator: 'Indicador 8.2: Representa, cataloga y describe con responsabilidad algunas especies, ecosistemas y paisajes de El Salvador: amenazados, extinguidos, en peligro, vulnerables y otros.',
-                question: "¿Qué ecosistema de El Salvador está gravemente amenazado por la urbanización?",
-                options: [
-                    { value: 'a', text: "Las zonas costeras." },
-                    { value: 'b', text: "Las áreas de páramo." },
-                    { value: 'c', text: "Las sabanas tropicales." },
-                    { value: 'd', text: "Los bosques de coníferas." }
-                ]
-            },
-            {
-                id: 'q17',
-                indicator: 'Indicador 8.2: Representa, cataloga y describe con responsabilidad algunas especies, ecosistemas y paisajes de El Salvador: amenazados, extinguidos, en peligro, vulnerables y otros.',
-                question: "¿Cuál es un ejemplo de una especie vulnerable en El Salvador?",
-                options: [
-                    { value: 'a', text: "El venado cola blanca (Odocoileus virginianus)." },
-                    { value: 'b', text: "El oso pardo (Ursus arctos)." },
-                    { value: 'c', text: "El águila real (Aquila chrysaetos)." },
-                    { value: 'd', text: "El canguro rojo (Macropus rufus)." }
-                ]
-            },
-            {
-                id: 'q18',
-                indicator: 'Indicador 8.2: Representa, cataloga y describe con responsabilidad algunas especies, ecosistemas y paisajes de El Salvador: amenazados, extinguidos, en peligro, vulnerables y otros.',
-                question: "¿Qué paisaje en El Salvador ha sido impactado significativamente por la agricultura intensiva?",
-                options: [
-                    { value: 'a', text: "Las llanuras costeras." },
-                    { value: 'b', text: "Las tierras altas volcánicas." },
-                    { value: 'c', text: "Las mesetas áridas." },
-                    { value: 'd', text: "Las zonas de tundra." }
-                ]
-            },
-            {
-                id: 'q19',
-                indicator: 'Indicador 8.2: Representa, cataloga y describe con responsabilidad algunas especies, ecosistemas y paisajes de El Salvador: amenazados, extinguidos, en peligro, vulnerables y otros.',
-                question: "¿Qué término se usa para describir un ecosistema que ha sido alterado pero aún mantiene su función ecológica?",
-                options: [
-                    { value: 'a', text: "Ecosistema alterado." },
-                    { value: 'b', text: "Ecosistema resiliente." },
-                    { value: 'c', text: "Ecosistema degradado." },
-                    { value: 'd', text: "Ecosistema colapsado." }
-                ]
-            },
-            {
-                id: 'q20',
-                indicator: 'Indicador 8.2: Representa, cataloga y describe con responsabilidad algunas especies, ecosistemas y paisajes de El Salvador: amenazados, extinguidos, en peligro, vulnerables y otros.',
-                question: "¿Cuál es la categoría de amenaza más grave para una especie según la Unión Internacional para la Conservación de la Naturaleza (UICN)?",
-                options: [
-                    { value: 'a', text: "En peligro crítico." },
-                    { value: 'b', text: "Vulnerable." },
-                    { value: 'c', text: "Casi amenazada." },
-                    { value: 'd', text: "Extinta en estado silvestre." }
-                ]
-            },
-            // Indicador 8.3
-            {
-                id: 'q21',
-                indicator: 'Indicador 8.3: Indaga y describe con interés las causas de la pérdida de la biodiversidad en el país.',
-                question: "¿Cuál es una de las principales causas de la pérdida de biodiversidad en El Salvador?",
-                options: [
-                    { value: 'a', text: "La deforestación para la agricultura." },
-                    { value: 'b', text: "El aumento de las áreas protegidas." },
-                    { value: 'c', text: "La recuperación de especies nativas." },
-                    { value: 'd', text: "La expansión de los corredores biológicos." }
-                ]
-            },
-            {
-                id: 'q22',
-                indicator: 'Indicador 8.3: Indaga y describe con interés las causas de la pérdida de la biodiversidad en el país.',
-                question: "¿Cómo afecta el cambio climático a la biodiversidad en El Salvador?",
-                options: [
-                    { value: 'a', text: "Provoca cambios en los hábitats que pueden resultar en la pérdida de especies." },
-                    { value: 'b', text: "Aumenta la diversidad genética de las especies." },
-                    { value: 'c', text: "No tiene impacto en la biodiversidad." },
-                    { value: 'd', text: "Promueve la expansión de especies invasoras." }
-                ]
-            },
-            {
-                id: 'q23',
-                indicator: 'Indicador 8.3: Indaga y describe con interés las causas de la pérdida de la biodiversidad en el país.',
-                question: "¿Qué impacto tiene la urbanización en la biodiversidad de El Salvador?",
-                options: [
-                    { value: 'a', text: "Destruye hábitats naturales, lo que lleva a la pérdida de especies." },
-                    { value: 'b', text: "Crea nuevos hábitats para especies adaptadas." },
-                    { value: 'c', text: "No afecta la biodiversidad." },
-                    { value: 'd', text: "Aumenta la diversidad de especies." }
-                ]
-            },
-            {
-                id: 'q24',
-                indicator: 'Indicador 8.3: Indaga y describe con interés las causas de la pérdida de la biodiversidad en el país.',
-                question: "¿Cómo contribuyen las especies invasoras a la pérdida de biodiversidad en El Salvador?",
-                options: [
-                    { value: 'a', text: "Compiten con las especies nativas, a veces llevándolas a la extinción." },
-                    { value: 'b', text: "Aumentan la diversidad de especies en los ecosistemas." },
-                    { value: 'c', text: "No tienen ningún efecto en las especies nativas." },
-                    { value: 'd', text: "Crean nuevos hábitats para especies nativas." }
-                ]
-            },
-            {
-                id: 'q25',
-                indicator: 'Indicador 8.3: Indaga y describe con interés las causas de la pérdida de la biodiversidad en el país.',
-                question: "¿Qué rol juega la sobreexplotación de recursos naturales en la pérdida de biodiversidad?",
-                options: [
-                    { value: 'a', text: "Agota las poblaciones de especies, reduciendo la biodiversidad." },
-                    { value: 'b', text: "Aumenta la diversidad de especies al eliminar competidores." },
-                    { value: 'c', text: "No tiene impacto en la biodiversidad." },
-                    { value: 'd', text: "Contribuye a la recuperación de especies amenazadas." }
-                ]
-            },
-            {
-                id: 'q26',
-                indicator: 'Indicador 8.3: Indaga y describe con interés las causas de la pérdida de la biodiversidad en el país.',
-                question: "¿Cómo afecta la fragmentación del hábitat a la biodiversidad en El Salvador?",
-                options: [
-                    { value: 'a', text: "Aísla poblaciones de especies, lo que puede llevar a la extinción local." },
-                    { value: 'b', text: "Aumenta la conectividad entre poblaciones de especies." },
-                    { value: 'c', text: "No afecta la biodiversidad." },
-                    { value: 'd', text: "Facilita la migración de especies entre hábitats." }
-                ]
-            },
-            {
-                id: 'q27',
-                indicator: 'Indicador 8.3: Indaga y describe con interés las causas de la pérdida de la biodiversidad en el país.',
-                question: "¿Cuál es un efecto negativo de la contaminación en la biodiversidad?",
-                options: [
-                    { value: 'a', text: "Daña los hábitats naturales, afectando a las especies que dependen de ellos." },
-                    { value: 'b', text: "Aumenta la disponibilidad de recursos para las especies." },
-                    { value: 'c', text: "No tiene impacto en la biodiversidad." },
-                    { value: 'd', text: "Promueve la diversidad de especies." }
-                ]
-            },
-            {
-                id: 'q28',
-                indicator: 'Indicador 8.3: Indaga y describe con interés las causas de la pérdida de la biodiversidad en el país.',
-                question: "¿Qué impacto tiene la conversión de tierras agrícolas en la biodiversidad?",
-                options: [
-                    { value: 'a', text: "Reduce la diversidad de hábitats disponibles para las especies." },
-                    { value: 'b', text: "Crea nuevos hábitats para especies nativas." },
-                    { value: 'c', text: "Aumenta la diversidad de especies." },
-                    { value: 'd', text: "No afecta la biodiversidad." }
-                ]
-            },
-            {
-                id: 'q29',
-                indicator: 'Indicador 8.3: Indaga y describe con interés las causas de la pérdida de la biodiversidad en el país.',
-                question: "¿Cómo afecta la caza furtiva a la biodiversidad en El Salvador?",
-                options: [
-                    { value: 'a', text: "Disminuye las poblaciones de especies amenazadas." },
-                    { value: 'b', text: "No tiene ningún impacto en las poblaciones de especies." },
-                    { value: 'c', text: "Aumenta la diversidad genética de las especies." },
-                    { value: 'd', text: "Contribuye a la recuperación de especies." }
-                ]
-            },
-            {
-                id: 'q30',
-                indicator: 'Indicador 8.3: Indaga y describe con interés las causas de la pérdida de la biodiversidad en el país.',
-                question: "¿Qué impacto tiene la agricultura intensiva en la biodiversidad?",
-                options: [
-                    { value: 'a', text: "Destruye hábitats naturales y reduce la diversidad de especies." },
-                    { value: 'b', text: "Aumenta la diversidad de especies en áreas agrícolas." },
-                    { value: 'c', text: "No afecta la biodiversidad." },
-                    { value: 'd', text: "Promueve la recuperación de hábitats naturales." }
-                ]
-            },
-            // Indicador 8.4
-            {
-                id: 'q31',
-                indicator: 'Indicador 8.4: Discute e interpreta de forma crítica algunos documentos relacionados con la pérdida de la diversidad biológica.',
-                question: "¿Cuál es un documento clave para la conservación de la biodiversidad en El Salvador?",
-                options: [
-                    { value: 'a', text: "El Plan Nacional de Biodiversidad." },
-                    { value: 'b', text: "La Convención sobre el Comercio Internacional de Especies Amenazadas." },
-                    { value: 'c', text: "El Protocolo de Kioto." },
-                    { value: 'd', text: "El Acuerdo de París." }
-                ]
-            },
-            {
-                id: 'q32',
-                indicator: 'Indicador 8.4: Discute e interpreta de forma crítica algunos documentos relacionados con la pérdida de la diversidad biológica.',
-                question: "¿Qué documento internacional es fundamental para la protección de las especies en peligro?",
-                options: [
-                    { value: 'a', text: "La Convención sobre el Comercio Internacional de Especies Amenazadas de Fauna y Flora Silvestres (CITES)." },
-                    { value: 'b', text: "La Declaración de Río sobre Medio Ambiente y Desarrollo." },
-                    { value: 'c', text: "El Tratado de No Proliferación Nuclear." },
-                    { value: 'd', text: "La Convención de Basilea." }
-                ]
-            },
-            {
-                id: 'q33',
-                indicator: 'Indicador 8.4: Discute e interpreta de forma crítica algunos documentos relacionados con la pérdida de la diversidad biológica.',
-                question: "¿Cuál es el objetivo principal del Convenio sobre la Diversidad Biológica (CDB)?",
-                options: [
-                    { value: 'a', text: "Conservar la biodiversidad y asegurar su uso sostenible." },
-                    { value: 'b', text: "Promover la globalización económica." },
-                    { value: 'c', text: "Aumentar la producción agrícola intensiva." },
-                    { value: 'd', text: "Fomentar el uso de energías renovables." }
-                ]
-            },
-            {
-                id: 'q34',
-                indicator: 'Indicador 8.4: Discute e interpreta de forma crítica algunos documentos relacionados con la pérdida de la diversidad biológica.',
-                question: "¿Qué papel juega la Unión Internacional para la Conservación de la Naturaleza (UICN) en la protección de la biodiversidad?",
-                options: [
-                    { value: 'a', text: "Clasifica especies según su estado de conservación y emite directrices para su protección." },
-                    { value: 'b', text: "Regula el comercio internacional de productos agrícolas." },
-                    { value: 'c', text: "Desarrolla tecnología para la agricultura intensiva." },
-                    { value: 'd', text: "Promueve la expansión de la urbanización en áreas rurales." }
-                ]
-            },
-            {
-                id: 'q35',
-                indicator: 'Indicador 8.4: Discute e interpreta de forma crítica algunos documentos relacionados con la pérdida de la diversidad biológica.',
-                question: "¿Qué documento aborda la protección de especies migratorias?",
-                options: [
-                    { value: 'a', text: "El Convenio de Bonn." },
-                    { value: 'b', text: "El Protocolo de Montreal." },
-                    { value: 'c', text: "El Acuerdo de París." },
-                    { value: 'd', text: "El Tratado Antártico." }
-                ]
-            },
-            {
-                id: 'q36',
-                indicator: 'Indicador 8.4: Discute e interpreta de forma crítica algunos documentos relacionados con la pérdida de la diversidad biológica.',
-                question: "¿Qué documento se centra en la sostenibilidad del uso de los recursos biológicos?",
-                options: [
-                    { value: 'a', text: "La Agenda 21." },
-                    { value: 'b', text: "El Tratado de No Proliferación Nuclear." },
-                    { value: 'c', text: "El Acuerdo de París." },
-                    { value: 'd', text: "La Declaración de Río." }
-                ]
-            },
-            {
-                id: 'q37',
-                indicator: 'Indicador 8.4: Discute e interpreta de forma crítica algunos documentos relacionados con la pérdida de la diversidad biológica.',
-                question: "¿Qué documento internacional busca reducir la pérdida de biodiversidad a través de la protección de especies y ecosistemas?",
-                options: [
-                    { value: 'a', text: "El Convenio sobre la Diversidad Biológica." },
-                    { value: 'b', text: "El Tratado Antártico." },
-                    { value: 'c', text: "La Convención de Basilea." },
-                    { value: 'd', text: "El Protocolo de Montreal." }
-                ]
-            },
-            {
-                id: 'q38',
-                indicator: 'Indicador 8.4: Discute e interpreta de forma crítica algunos documentos relacionados con la pérdida de la diversidad biológica.',
-                question: "¿Cuál es una de las principales acciones promovidas por la Convención sobre la Diversidad Biológica para proteger la biodiversidad?",
-                options: [
-                    { value: 'a', text: "Establecimiento de áreas protegidas y conservación in situ." },
-                    { value: 'b', text: "Promoción de la agricultura intensiva." },
-                    { value: 'c', text: "Expansión de áreas urbanas en zonas rurales." },
-                    { value: 'd', text: "Fomento de la deforestación para la agricultura." }
-                ]
-            },
-            {
-                id: 'q39',
-                indicator: 'Indicador 8.4: Discute e interpreta de forma crítica algunos documentos relacionados con la pérdida de la diversidad biológica.',
-                question: "¿Qué documento busca integrar la conservación de la biodiversidad en las políticas de desarrollo nacional?",
-                options: [
-                    { value: 'a', text: "La Estrategia Nacional de Biodiversidad." },
-                    { value: 'b', text: "El Tratado de No Proliferación Nuclear." },
-                    { value: 'c', text: "El Protocolo de Montreal." },
-                    { value: 'd', text: "La Convención de Basilea." }
-                ]
-            },
-            {
-                id: 'q40',
-                indicator: 'Indicador 8.4: Discute e interpreta de forma crítica algunos documentos relacionados con la pérdida de la diversidad biológica.',
-                question: "¿Qué objetivo se establece en el Plan Estratégico para la Biodiversidad 2011-2020 de la CDB?",
-                options: [
-                    { value: 'a', text: "Detener la pérdida de biodiversidad y garantizar la provisión de servicios ecosistémicos." },
-                    { value: 'b', text: "Aumentar la producción agrícola en áreas protegidas." },
-                    { value: 'c', text: "Fomentar la expansión de áreas urbanas en zonas rurales." },
-                    { value: 'd', text: "Promover el uso de combustibles fósiles." }
+                indicator: "Indicador 8.4: Discute e interpreta de forma crítica algunos documentos relacionados con la pérdida de la diversidad biológica.",
+                questions: [
+                    {
+                        question: "¿Cuál es un documento clave para la conservación de la biodiversidad en El Salvador?",
+                        answers: [
+                            { text: "El Plan Nacional de Biodiversidad.", correct: true },
+                            { text: "La Convención sobre el Comercio Internacional de Especies Amenazadas.", correct: false },
+                            { text: "El Protocolo de Kioto.", correct: false },
+                            { text: "El Acuerdo de París.", correct: false }
+                        ]
+                    },
+                    {
+                        question: "¿Qué objetivo se establece en el Plan Estratégico para la Biodiversidad 2011-2020 de la CDB?",
+                        answers: [
+                            { text: "Detener la pérdida de biodiversidad y garantizar la provisión de servicios ecosistémicos.", correct: true },
+                            { text: "Aumentar la producción agrícola en áreas protegidas.", correct: false },
+                            { text: "Fomentar la expansión de áreas urbanas en zonas rurales.", correct: false },
+                            { text: "Promover el uso de combustibles fósiles.", correct: false }
+                        ]
+                    },
+                    {
+                        question: "¿Qué documento internacional busca reducir la pérdida de biodiversidad a través de la protección de especies y ecosistemas?",
+                        answers: [
+                            { text: "El Convenio sobre la Diversidad Biológica.", correct: true },
+                            { text: "El Tratado Antártico.", correct: false },
+                            { text: "La Convención de Basilea.", correct: false },
+                            { text: "El Protocolo de Montreal.", correct: false }
+                        ]
+                    },
+                    {
+                        question: "¿Qué documento se centra en la sostenibilidad del uso de los recursos biológicos?",
+                        answers: [
+                            { text: "La Agenda 21.", correct: true },
+                            { text: "El Tratado de No Proliferación Nuclear.", correct: false },
+                            { text: "El Acuerdo de París.", correct: false },
+                            { text: "La Declaración de Río.", correct: false }
+                        ]
+                    },
+                    {
+                        question: "¿Cuál es el objetivo principal del Convenio sobre la Diversidad Biológica (CDB)?",
+                        answers: [
+                            { text: "Conservar la biodiversidad y asegurar su uso sostenible.", correct: true },
+                            { text: "Promover la globalización económica.", correct: false },
+                            { text: "Aumentar la producción agrícola intensiva.", correct: false },
+                            { text: "Fomentar el uso de energías renovables.", correct: false }
+                        ]
+                    },
+                    {
+                        question: "¿Qué documento internacional es fundamental para la protección de las especies en peligro?",
+                        answers: [
+                            { text: "La Convención sobre el Comercio Internacional de Especies Amenazadas de Fauna y Flora Silvestres (CITES).", correct: true },
+                            { text: "La Declaración de Río sobre Medio Ambiente y Desarrollo.", correct: false },
+                            { text: "El Tratado de No Proliferación Nuclear.", correct: false },
+                            { text: "La Convención de Basilea.", correct: false }
+                        ]
+                    },
+                    {
+                        question: "¿Qué documento busca integrar la conservación de la biodiversidad en las políticas de desarrollo nacional?",
+                        answers: [
+                            { text: "La Estrategia Nacional de Biodiversidad.", correct: true },
+                            { text: "El Tratado de No Proliferación Nuclear.", correct: false },
+                            { text: "El Protocolo de Montreal.", correct: false },
+                            { text: "La Convención de Basilea.", correct: false }
+                        ]
+                    },
+                    {
+                        question: "¿Qué documento aborda la protección de especies migratorias?",
+                        answers: [
+                            { text: "El Convenio de Bonn.", correct: true },
+                            { text: "El Protocolo de Montreal.", correct: false },
+                            { text: "El Acuerdo de París.", correct: false },
+                            { text: "El Tratado Antártico.", correct: false }
+                        ]
+                    },
+                    {
+                        question: "¿Cuál es una de las principales acciones promovidas por la Convención sobre la Diversidad Biológica para proteger la biodiversidad?",
+                        answers: [
+                            { text: "Establecimiento de áreas protegidas y conservación in situ.", correct: true },
+                            { text: "Promoción de la agricultura intensiva.", correct: false },
+                            { text: "Expansión de áreas urbanas en zonas rurales.", correct: false },
+                            { text: "Fomento de la deforestación para la agricultura.", correct: false }
+                        ]
+                    },
+                    {
+                        question: "¿Qué papel juega la Unión Internacional para la Conservación de la Naturaleza (UICN) en la protección de la biodiversidad?",
+                        answers: [
+                            { text: "Clasifica especies según su estado de conservación y emite directrices para su protección.", correct: true },
+                            { text: "Regula el comercio internacional de productos agrícolas.", correct: false },
+                            { text: "Desarrolla tecnología para la agricultura intensiva.", correct: false },
+                            { text: "Promueve la expansión de la urbanización en áreas rurales.", correct: false }
+                        ]
+                    }
                 ]
             }
         ];
 
-        const correctAnswerKeys = {
-            q1: 'a', q2: 'a', q3: 'a', q4: 'a', q5: 'a', q6: 'a', q7: 'a', q8: 'a', q9: 'a', q10: 'a',
-            q11: 'a', q12: 'a', q13: 'a', q14: 'a', q15: 'a', q16: 'a', q17: 'a', q18: 'a', q19: 'a', q20: 'a',
-            q21: 'a', q22: 'a', q23: 'a', q24: 'a', q25: 'a', q26: 'a', q27: 'a', q28: 'a', q29: 'a', q30: 'a',
-            q31: 'a', q32: 'a', q33: 'a', q34: 'a', q35: 'a', q36: 'a', q37: 'a', q38: 'a', q39: 'a', q40: 'a'
-        };
+        let attempt = 0;
+        const maxAttempts = 2;
+        const evaluationName = "Evaluación Unidad 8: Clasificando a los Seres Vivos";
+        let timer;
+        let timeLeft = 1800; // 30 minutos en segundos
+        let startTime;
+        let manipulationCount = 0;
 
         function shuffle(array) {
             for (let i = array.length - 1; i > 0; i--) {
@@ -564,99 +569,198 @@
             return array;
         }
 
-        function displayQuestions() {
-            const container = document.getElementById('questions-container');
-            const shuffledQuestions = shuffle([...questions]);
+        function loadQuiz() {
+            const quizContainer = document.getElementById('quiz');
+            quizContainer.innerHTML = '';
 
-            shuffledQuestions.forEach((q, index) => {
-                const questionElement = document.createElement('div');
-                questionElement.classList.add('question');
-                questionElement.innerHTML = `
-                    <h3>${q.indicator}</h3>
-                    <p>${index + 1}. ${q.question}</p>
-                    ${q.options.map(option => `
-                        <input type="radio" name="${q.id}" value="${option.value}" required> ${option.value}) ${option.text}<br>
-                    `).join('')}
-                `;
-                container.appendChild(questionElement);
+            quizData.forEach(section => {
+                const indicatorContainer = document.createElement('div');
+                indicatorContainer.className = 'indicator';
+                indicatorContainer.innerText = section.indicator;
+                quizContainer.appendChild(indicatorContainer);
+
+                shuffle(section.questions).forEach((data, index) => {
+                    const questionContainer = document.createElement('div');
+                    questionContainer.className = 'question';
+
+                    const questionTitle = document.createElement('h3');
+                    questionTitle.innerText = `${index + 1}. ${data.question}`;
+                    questionContainer.appendChild(questionTitle);
+
+                    const optionsList = document.createElement('ul');
+                    optionsList.className = 'options';
+
+                    shuffle(data.answers).forEach(answer => {
+                        const option = document.createElement('li');
+                        const optionLabel = document.createElement('label');
+                        const optionInput = document.createElement('input');
+                        optionInput.type = 'radio';
+                        optionInput.name = `question${section.indicator}${index}`;
+                        optionInput.value = answer.correct;
+                        optionLabel.appendChild(optionInput);
+                        optionLabel.appendChild(document.createTextNode(answer.text));
+                        option.appendChild(optionLabel);
+                        optionsList.appendChild(option);
+                    });
+
+                    questionContainer.appendChild(optionsList);
+                    quizContainer.appendChild(questionContainer);
+                });
             });
         }
 
-        function startTimer() {
-            document.getElementById('timer').classList.remove('hidden');
-            startTime = new Date();
-            const timerInterval = setInterval(() => {
-                const minutes = Math.floor(timeRemaining / 60);
-                const seconds = timeRemaining % 60;
-                timerElement.textContent = `${minutes}:${seconds.toString().padStart(2, '0')}`;
-                if (timeRemaining === 0) {
-                    clearInterval(timerInterval);
-                    showResults("Tiempo agotado. No se pudo completar la evaluación.", []);
-                }
-                timeRemaining--;
-            }, 1000);
-        }
+        function submitQuiz() {
+            const fullname = document.getElementById('fullname').value.trim();
+            const nie = document.getElementById('nie').value.trim();
 
-        document.getElementById('infoForm').addEventListener('submit', function (event) {
-            event.preventDefault();
-            const name = document.getElementById('name').value;
-            const nie = document.getElementById('nie').value;
-
-            if (!nieList.includes(nie)) {
-                alert("NIE no autorizado.");
+            if (!fullname || !nie) {
+                alert('Por favor, ingresa tu nombre completo y NIE.');
                 return;
             }
 
-            document.getElementById('studentInfoForm').classList.add('hidden');
-            document.getElementById('quiz').classList.remove('hidden');
-            displayQuestions();
-            startTimer();
-        });
+            if (attempt >= maxAttempts) {
+                alert('Has alcanzado el número máximo de intentos.');
+                return;
+            }
 
-        document.getElementById('submitQuiz').addEventListener('click', function () {
-            let correctAnswers = 0;
+            const answers = document.querySelectorAll('input[type="radio"]:checked');
             let incorrectAnswers = [];
+            let questionCount = 0;
 
-            questions.forEach(q => {
-                const selectedAnswer = document.querySelector(`input[name="${q.id}"]:checked`);
-                if (selectedAnswer) {
-                    if (selectedAnswer.value === correctAnswerKeys[q.id]) {
-                        correctAnswers++;
-                    } else {
-                        incorrectAnswers.push(`Pregunta ${q.id.substring(1)} incorrecta.`);
+            quizData.forEach(section => {
+                section.questions.forEach((data, index) => {
+                    const selected = answers[questionCount] ? answers[questionCount].value === 'true' : null;
+                    if (selected === false || selected === null) {
+                        incorrectAnswers.push(`Pregunta ${questionCount + 1} del ${section.indicator}`);
                     }
-                }
+                    questionCount++;
+                });
             });
 
-            const score = (correctAnswers / questions.length) * 10;
+            // Mostrar los resultados en el modal
+            document.getElementById('modalName').innerText = `Nombre: ${fullname}`;
+            document.getElementById('modalNIE').innerText = `NIE: ${nie}`;
+            const modalIncorrectAnswers = document.getElementById('modalIncorrectAnswers');
+            modalIncorrectAnswers.innerHTML = '';
+            incorrectAnswers.forEach((questionNumber) => {
+                const div = document.createElement('div');
+                div.innerText = questionNumber;
+                modalIncorrectAnswers.appendChild(div);
+            });
+
+            // Mostrar detalles adicionales
             const endTime = new Date();
-            const timeTaken = Math.floor((endTime - startTime) / 1000); // Tiempo en segundos
+            const timeTaken = ((endTime - startTime) / 1000).toFixed(2);
+            const currentDate = new Date();
+            const modalDetails = document.getElementById('modalDetails');
+            modalDetails.innerHTML = `
+                Fecha: ${currentDate.toLocaleDateString()}<br>
+                Hora: ${currentDate.toLocaleTimeString()}<br>
+                Tiempo en realizar la prueba: ${timeTaken} segundos<br>
+                Nombre de la unidad: ${evaluationName}<br>
+                Calificación: ${((quizData.length - incorrectAnswers.length) / quizData.length * 10).toFixed(2)}/10
+            `;
 
-            showResults(`Calificación: ${score.toFixed(2)} / 10`, incorrectAnswers, timeTaken);
-        });
+            // Mostrar intentos de manipulación
+            document.getElementById('manipulationCount').innerText = `Intentos de manipulación detectados: ${manipulationCount}`;
 
-        function showResults(scoreText, incorrectAnswers, timeTaken) {
-            const date = new Date();
-            const minutesTaken = Math.floor(timeTaken / 60);
-            const secondsTaken = timeTaken % 60;
+            // Mostrar contador de reintentos
+            document.getElementById('attemptCount').innerText = `Reintentos: ${attempt + 1}`;
 
-            document.getElementById('quiz').classList.add('hidden');
-            document.getElementById('resultsModal').style.display = 'block';
-            document.getElementById('overlay').style.display = 'block';
+            const modal = document.getElementById('resultModal');
+            modal.style.display = 'block';
 
-            document.getElementById('date').textContent = `Fecha: ${date.toLocaleDateString()} ${date.toLocaleTimeString()}`;
-            document.getElementById('timeTaken').textContent = `Tiempo tomado: ${minutesTaken} minutos y ${secondsTaken} segundos`;
-            document.getElementById('unitEvaluated').textContent = `Unidad Evaluada: Unidad 8: Clasificando a los Seres Vivos`;
-            document.getElementById('studentName').textContent = `Nombre del Estudiante: ${document.getElementById('name').value}`;
-            document.getElementById('studentNIE').textContent = `NIE: ${document.getElementById('nie').value}`;
-            document.getElementById('score').textContent = scoreText;
-            document.getElementById('incorrectAnswers').textContent = incorrectAnswers.join(', ');
+            attempt++;
+            if (attempt >= maxAttempts) {
+                alert('Has alcanzado el número máximo de intentos.');
+                // Aquí puedes agregar código para bloquear la MAC o deshabilitar la evaluación
+            }
         }
 
-        document.getElementById('closeModal').addEventListener('click', function () {
-            document.getElementById('resultsModal').style.display = 'none';
-            document.getElementById('overlay').style.display = 'none';
+        document.getElementById('submit').addEventListener('click', submitQuiz);
+
+        document.getElementById('startQuiz').addEventListener('click', function() {
+            const nie = document.getElementById('nie').value.trim();
+            if (!authorizedNIEs.includes(nie)) {
+                alert('NIE no autorizado.');
+                return;
+            }
+            document.querySelector('.quiz-container').style.display = 'block';
+            document.getElementById('infoModal').style.display = 'none';
+            startTime = new Date();
+            startTimer();
+            loadQuiz();
         });
+
+        // Modal close functionality
+        const closeModal = document.getElementsByClassName('close')[0];
+        closeModal.onclick = function() {
+            document.getElementById('resultModal').style.display = 'none';
+        }
+
+        window.onclick = function(event) {
+            if (event.target == document.getElementById('resultModal')) {
+                document.getElementById('resultModal').style.display = 'none';
+            }
+        }
+
+        document.addEventListener("contextmenu", function(e){
+            e.preventDefault();
+            updateCaptureCount();
+        }, false);
+
+        function startTimer() {
+            timer = setInterval(function() {
+                timeLeft--;
+                const timerElement = document.getElementById('timer');
+                let minutes = Math.floor(timeLeft / 60);
+                let seconds = timeLeft % 60;
+                seconds = seconds < 10 ? '0' + seconds : seconds;
+                timerElement.innerText = `${minutes}:${seconds}`;
+
+                if (timeLeft <= 600) {
+                    timerElement.style.backgroundColor = 'red';
+                } else if (timeLeft <= 1200) {
+                    timerElement.style.backgroundColor = 'orange';
+                } else {
+                    timerElement.style.backgroundColor = 'green';
+                }
+
+                if (timeLeft <= 0) {
+                    clearInterval(timer);
+                    submitQuiz();
+                }
+            }, 1000);
+        }
+
+        function updateCaptureCount() {
+            manipulationCount++;
+        }
+
+        document.addEventListener('visibilitychange', function() {
+            if (document.visibilityState === 'hidden') {
+                updateCaptureCount();
+            }
+        });
+
+        window.addEventListener('pagehide', function() {
+            updateCaptureCount();
+        });
+
+        window.addEventListener('contextmenu', function(e) {
+            e.preventDefault();
+            updateCaptureCount();
+        });
+
+        document.addEventListener('touchstart', function(event) {
+            if (event.touches.length > 1) {
+                updateCaptureCount();
+            }
+        });
+
+        window.onload = function() {
+            document.getElementById('infoModal').style.display = 'block';
+        }
     </script>
 </body>
 </html>

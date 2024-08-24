@@ -188,6 +188,12 @@
     <div id="timer">30:00</div>
 
     <script>
+        const authorizedNIEs = [
+            "4267837", "3850952", "3851018", "5032035", "19806181", "6297536", 
+            "2608724", "6262810", "4267838", "20162435", "3850923", "19806209", 
+            "4267828", "3850942"
+        ];
+
         const quizData = [
             {
                 indicator: "Indicador 8.1: Indaga y describe con certeza la importancia de la diversidad biológica, según los diferentes niveles: genético, especies, ecosistema y paisajes.",
@@ -487,6 +493,24 @@
                         ]
                     },
                     {
+                        question: "¿Qué documento internacional es fundamental para la protección de las especies en peligro?",
+                        answers: [
+                            { text: "La Convención sobre el Comercio Internacional de Especies Amenazadas de Fauna y Flora Silvestres (CITES).", correct: true },
+                            { text: "La Declaración de Río sobre Medio Ambiente y Desarrollo.", correct: false },
+                            { text: "El Tratado de No Proliferación Nuclear.", correct: false },
+                            { text: "La Convención de Basilea.", correct: false }
+                        ]
+                    },
+                    {
+                        question: "¿Qué documento aborda la protección de especies migratorias?",
+                        answers: [
+                            { text: "El Convenio de Bonn.", correct: true },
+                            { text: "El Protocolo de Montreal.", correct: false },
+                            { text: "El Acuerdo de París.", correct: false },
+                            { text: "El Tratado Antártico.", correct: false }
+                        ]
+                    },
+                    {
                         question: "¿Qué documento se centra en la sostenibilidad del uso de los recursos biológicos?",
                         answers: [
                             { text: "La Agenda 21.", correct: true },
@@ -505,12 +529,12 @@
                         ]
                     },
                     {
-                        question: "¿Qué documento internacional es fundamental para la protección de las especies en peligro?",
+                        question: "¿Qué papel juega la Unión Internacional para la Conservación de la Naturaleza (UICN) en la protección de la biodiversidad?",
                         answers: [
-                            { text: "La Convención sobre el Comercio Internacional de Especies Amenazadas de Fauna y Flora Silvestres (CITES).", correct: true },
-                            { text: "La Declaración de Río sobre Medio Ambiente y Desarrollo.", correct: false },
-                            { text: "El Tratado de No Proliferación Nuclear.", correct: false },
-                            { text: "La Convención de Basilea.", correct: false }
+                            { text: "Clasifica especies según su estado de conservación y emite directrices para su protección.", correct: true },
+                            { text: "Regula el comercio internacional de productos agrícolas.", correct: false },
+                            { text: "Desarrolla tecnología para la agricultura intensiva.", correct: false },
+                            { text: "Promueve la expansión de la urbanización en áreas rurales.", correct: false }
                         ]
                     },
                     {
@@ -523,30 +547,12 @@
                         ]
                     },
                     {
-                        question: "¿Qué documento aborda la protección de especies migratorias?",
-                        answers: [
-                            { text: "El Convenio de Bonn.", correct: true },
-                            { text: "El Protocolo de Montreal.", correct: false },
-                            { text: "El Acuerdo de París.", correct: false },
-                            { text: "El Tratado Antártico.", correct: false }
-                        ]
-                    },
-                    {
-                        question: "¿Cuál es una de las principales acciones promovidas por la Convención sobre la Diversidad Biológica para proteger la biodiversidad?",
+                        question: "¿Qué acción es promovida por la Convención sobre la Diversidad Biológica para proteger la biodiversidad?",
                         answers: [
                             { text: "Establecimiento de áreas protegidas y conservación in situ.", correct: true },
                             { text: "Promoción de la agricultura intensiva.", correct: false },
                             { text: "Expansión de áreas urbanas en zonas rurales.", correct: false },
                             { text: "Fomento de la deforestación para la agricultura.", correct: false }
-                        ]
-                    },
-                    {
-                        question: "¿Qué papel juega la Unión Internacional para la Conservación de la Naturaleza (UICN) en la protección de la biodiversidad?",
-                        answers: [
-                            { text: "Clasifica especies según su estado de conservación y emite directrices para su protección.", correct: true },
-                            { text: "Regula el comercio internacional de productos agrícolas.", correct: false },
-                            { text: "Desarrolla tecnología para la agricultura intensiva.", correct: false },
-                            { text: "Promueve la expansión de la urbanización en áreas rurales.", correct: false }
                         ]
                     }
                 ]
